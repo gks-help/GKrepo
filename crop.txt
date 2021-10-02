@@ -1,0 +1,36 @@
+============cropCalenderController=======================================================	
+@GetMapping(value = "/view_crop/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<JSONObject>> listCropCalendar(@PathVariable("id") Long id) {
+
+		List<JSONObject> result = utilService.listCropCalendarDetailById(id);
+
+		HttpStatus status = result != null && result.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT;
+		return ResponseEntity.status(status).body(result);
+
+	}
+
+===============IutilDAO=======================================================
+List<CropCalendar> listCropCalendarDetailByProcurementVarietyId(Long id);
+========================================================
+
+====================================================
+===========UtilService===============================
+	public List<JSONObject> listCropCalendarDetailById(Long id) {
+		List<JSONObject> result = new ArrayList<JSONObject>();
+		
+		CropCalendar cropCalendar = new CropCalendar();
+		List<CropCalendar> CropCalendarList = utilDAO.listCropCalendarDetailByProcurementVarietyId(id);
+		CropCalendarList.stream().forEach(f -> {
+			JSONObject json = new JSONObject();
+            json.put("ActivityType", f.getActivityType()!=null ? f.getActivityType() :"");
+         
+			f.getCropCalendarDetail().stream().forEach(f1 -> {
+		    json.put("ActivityMethod", f1.getActivityMethod()!=null ? f1.getActivityMethod() :"");
+		    result.add(json);
+			});
+			result.add(json);
+		});
+		return result;
+	}
+
+===================================================================
